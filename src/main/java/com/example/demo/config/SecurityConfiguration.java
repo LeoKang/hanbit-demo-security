@@ -1,10 +1,16 @@
 package com.example.demo.config;
 
+import com.example.demo.model.Authority;
+import com.example.demo.model.Member;
+import com.example.demo.model.MemberUserDetails;
+import com.example.demo.repository.AuthorityRepository;
+import com.example.demo.repository.MemberRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -12,6 +18,7 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 @Configuration
 public class SecurityConfiguration {
@@ -48,13 +55,26 @@ public class SecurityConfiguration {
 //        return new InMemoryUserDetailsManager(user, admin);
 //    }
 
-    @Bean
-    UserDetailsManager userDetailsManagerJdbc(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
-    }
+//    @Bean
+//    UserDetailsManager userDetailsManagerJdbc(DataSource dataSource) {
+//        return new JdbcUserDetailsManager(dataSource);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsServiceCustom2(MemberRepository memberRepository, AuthorityRepository authorityRepository) {
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                Member member = memberRepository.findByEmail(username).orElseThrow();
+                List<Authority> authorities = authorityRepository.findByMember(member);
+
+                return new MemberUserDetails(member, authorities);
+            }
+        };
     }
 }
