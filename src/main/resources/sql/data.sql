@@ -1,6 +1,12 @@
-INSERT INTO users(username, password, enabled) VALUES('user','$2b$10$ikig5FJoIeUBHK80/O6/5O3HmVxFm2FvVM/LPYnLt3rMJnV5mu8dC',TRUE);
-INSERT INTO users(username, password, enabled) VALUES('admin','$2b$10$ikig5FJoIeUBHK80/O6/5O3HmVxFm2FvVM/LPYnLt3rMJnV5mu8dC',TRUE);
+INSERT INTO member(name, email, password)
+VALUES (
+           '관리자',
+           'user',
+           '$2b$10$ikig5FJoIeUBHK80/O6/5O3HmVxFm2FvVM/LPYnLt3rMJnV5mu8dC'
+       );
 
-INSERT INTO authorities(username, authority) VALUES ('user', 'ROLE_USER');
-INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_USER');
-INSERT INTO authorities(username, authority) VALUES ('admin', 'ROLE_ADMIN');
+INSERT INTO authority(authority, member_id)
+VALUES ('ROLE_USER', 1);
+
+INSERT INTO authority(authority, member_id)
+VALUES ('ROLE_ADMIN', 1);
